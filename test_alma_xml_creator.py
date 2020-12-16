@@ -5,13 +5,17 @@ Tests for XML creation
 import pytest
 from xml.etree import ElementTree
 
-import alma_xml_creator
+from alma_xml_creator import MarcCollection
 
 
-class TestCreateCollection:
+class TestMarcCollection:
+    """
+    Does an instance of MarcCollection work as expected?
+    """
 
-    collection = alma_xml_creator.create_collection_element()
-    record = alma_xml_creator.append_record(collection)
+    TestCollection = MarcCollection()
+    collection = TestCollection.collection
+    record = TestCollection.append_record()
 
     def test_can_add_subelement(self):
         """Output from create_collection_tree() can have SubElement"""
