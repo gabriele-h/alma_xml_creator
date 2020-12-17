@@ -19,11 +19,8 @@ class TestMarcCollection:
     record = TestRecord.root
     leader = TestRecord.append_leader('     ntm a22      c 4500')
     controlfield = TestRecord.append_controlfield('007', 'tu')
-    subfields = (
-        TestRecord.create_subfield("a", "ger"),
-        TestRecord.create_subfield("c", "eng")
-    )
-    datafield = TestRecord.append_datafield(('041', ' ', '1'), subfields)
+    subfields = """$$ager$$ceng"""
+    datafield = TestRecord.append_datafield('041 1', subfields)
 
     def test_collection_has_tag(self):
         """Creating the colleciton worked"""

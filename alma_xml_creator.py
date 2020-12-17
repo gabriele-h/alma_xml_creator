@@ -2,8 +2,13 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
+from logging import getLogger
+from re import compile
+from typing import Iterator
 from xml.etree.ElementTree import Element, SubElement
 
+
+logger = getLogger("alma_xml_creator")
 
 class MarcCollection:
     """
@@ -22,13 +27,23 @@ class MarcCollection:
         def __init__(self):
             self.root = Element('record')
 
-        def append_datafield(self, attributes: tuple, subfields: tuple) -> SubElement:
+        def append_datafield(self, attributes: str, subfields: str) -> SubElement:
             datafield = SubElement(self.root, "datafield")
-            datafield.set("tag", attributes[0])
-            datafield.set("ind1", attributes[1])
-            datafield.set("ind2", attributes[2])
-            for subfield in subfields:
-                datafield.append(subfield)
+            datafield.set("tag", attributes[0:3])
+            datafield.set("ind1", attributes[3])
+            datafield.set("ind2", attributes[4])
+
+            for subfield in subfields.lstrip("$").split('$$'):
+
+                code = subfield[0]
+                content = subfield[1:]
+                subfield_element = self.create_subfield(code, content)
+
+                try:
+                    datafield.append(subfield_element)
+                except TypeError:
+                    logger.error("Could not append subfield.")
+
             return datafield
 
         @staticmethod
