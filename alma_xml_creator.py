@@ -7,7 +7,7 @@ from logging import getLogger
 from re import compile
 from sys import argv
 from typing import Iterator
-from xml.etree.ElementTree import Element, SubElement
+from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 
 logger = getLogger("alma_xml_creator")
@@ -34,14 +34,16 @@ def create_collection_from_reader(current_reader: Iterator[dict]):
             field_key = csv_header[i]
             field_value = row[i]
 
-            if field_key in ('LDR', 'leader') and field_value != "":
-                NewRecord.append_leader(field_value)
-            elif field_key[0] == "0" and field_key[1] == "0" and field_value != "":
-                NewRecord.append_controlfield(field_key, field_value)
-            elif compile(r'^[0-9]{3}[0-9A-z ]{2}$').match(field_key) and field_value != "":
-                NewRecord.append_datafield(field_key, field_value)
-            else:
-                logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
+            if field_value != "":
+
+                if field_key in ('LDR', 'leader', 'LDR  '):
+                    NewRecord.append_leader(field_value)
+                elif field_key[0] == "0" and field_key[1] == "0":
+                    NewRecord.append_controlfield(field_key, field_value)
+                elif compile(r'^[0-9]{3}[0-9A-z ]{2}$').match(field_key):
+                    NewRecord.append_datafield(field_key, field_value)
+                else:
+                    logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
 
         new_collection.append(NewRecord.root)
         print(NewRecord.root)
@@ -137,14 +139,16 @@ class MarcCollection:
 
 
 # Make this work as a cli-script, too
-if __name__ == "main":
+if __name__ == "__main__":
 
-    csv_path = argv[1]
-    xml_path = argv[2]
+    try:
+        csv_path = argv[1]
+        xml_path = argv[2]
+    except IndexError:
+        print("Please provide both input and output file in that order.")
 
-    with open(csv_path, newline="") as csv_file:
+    with open(csv_path, "r", newline="", encoding="ANSI") as csv_file:
         csv_reader = reader(csv_file, delimiter=";")
         collection = create_collection_from_reader(csv_reader)
 
-        with open(xml_path, newline="") as xml_file:
-            collection.write(xml_file)
+        ElementTree(collection).write(xml_path)
