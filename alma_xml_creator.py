@@ -2,13 +2,52 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
+from csv import reader
 from logging import getLogger
 from re import compile
+from sys import argv
 from typing import Iterator
 from xml.etree.ElementTree import Element, SubElement
 
 
 logger = getLogger("alma_xml_creator")
+
+
+def create_collection_from_reader(current_reader: Iterator[dict]):
+    """
+    For a given csv-reader create and populate a collection with records.
+    :param current_reader: csv.reader of a file
+    :return: collection as an xml.etree.ElementTree.Element
+    """
+
+    csv_header = next(current_reader)
+
+    NewCollection = MarcCollection()
+    new_collection = NewCollection.root
+
+    for row in current_reader:
+
+        NewRecord = NewCollection.MarcRecord()
+
+        for i in range(0, len(row)):
+
+            field_key = csv_header[i]
+            field_value = row[i]
+
+            if field_key in ('LDR', 'leader') and field_value != "":
+                NewRecord.append_leader(field_value)
+            elif field_key[0] == "0" and field_key[1] == "0" and field_value != "":
+                NewRecord.append_controlfield(field_key, field_value)
+            elif compile(r'^[0-9]{3}[0-9A-z ]{2}$').match(field_key) and field_value != "":
+                NewRecord.append_datafield(field_key, field_value)
+            else:
+                logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
+
+        new_collection.append(NewRecord.root)
+        print(NewRecord.root)
+
+    return new_collection
+
 
 class MarcCollection:
     """
@@ -66,3 +105,17 @@ class MarcCollection:
             field = SubElement(self.root, name)
             field.text = text
             return field
+
+
+# Make this work as a cli-script, too
+if __name__ == "main":
+
+    csv_path = argv[1]
+    xml_path = argv[2]
+
+    with open(csv_path, newline="") as csv_file:
+        csv_reader = reader(csv_file, delimiter=";")
+        collection = create_collection_from_reader(csv_reader)
+
+        with open(xml_path, newline="") as xml_file:
+            collection.write(xml_file)

@@ -3,9 +3,62 @@ Tests for XML creation
 """
 
 import pytest
+from csv import reader, writer
+from io import StringIO
 from xml.etree import ElementTree
 
-from alma_xml_creator import MarcCollection
+from alma_xml_creator import MarcCollection, create_collection_from_reader
+
+
+class TestCreateCollectionFromReader:
+    """
+    With a dummy DictReader, is the xml created as expected?
+    """
+
+    csvfile = StringIO()
+    csvfile.seek(0)
+    csvwriter = writer(csvfile, delimiter=';')
+    csvwriter.writerow(['leader', '007', '008', '041  ', '24500', '24610', '500  ', '500  '])
+    csvwriter.writerow(
+        [
+            '     ntm a22      c 4500',
+            'tu',
+            '######|2020####|||###########|||#|#ger#c',
+            '$$ager$$aeng',
+            '$$aTest titles are best titles',
+            '$$azehn',
+            '$$aThematisches',
+            '$$aSchlagwort'
+        ]
+    )
+    csvwriter.writerow(
+        [
+            '     ntm a22      c 4500',
+            'tu',
+            '######|2020####|||###########|||#|#ger#c',
+            '$$ager',
+            '$$aBest titles are test titles',
+            '$$azehn',
+            '$$aThematisches',
+            ''
+        ]
+    )
+    csvfile.seek(0)
+    csv_reader = reader(csvfile, delimiter=';')
+    collection = create_collection_from_reader(csv_reader)
+
+    def test_title_created_correctly(self):
+        xpath_title = './record/datafield[@tag="245"]/subfield[@code="a"]'
+        titles = self.collection.findall(xpath_title)
+        assert titles[0].text == 'Test titles are best titles' and \
+               titles[1].text == 'Best titles are test titles'
+
+    def test_count_500(self):
+        xpath_500 = './/datafield[@tag="500"]'
+        all_500 = self.collection.findall(xpath_500)
+        from xml.etree.ElementTree import tostring
+        print(tostring(self.collection))
+        assert len(all_500) == 3
 
 
 class TestMarcCollection:
