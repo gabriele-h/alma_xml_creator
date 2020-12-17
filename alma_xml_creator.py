@@ -151,4 +151,4 @@ if __name__ == "__main__":
         csv_reader = reader(csv_file, delimiter=";")
         collection = create_collection_from_reader(csv_reader)
 
-        ElementTree(collection).write(xml_path)
+        ElementTree(collection).write(xml_path, encoding='utf-8', xml_declaration=True)
