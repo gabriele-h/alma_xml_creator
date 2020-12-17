@@ -14,9 +14,9 @@ class TestMarcCollection:
     """
 
     TestCollection = MarcCollection()
-    collection = TestCollection.collection
+    collection = TestCollection.root
     TestRecord = TestCollection.MarcRecord()
-    record = TestRecord.record
+    record = TestRecord.root
 
     def test_can_add_subelement(self):
         """Output from create_collection_tree() can have SubElement"""

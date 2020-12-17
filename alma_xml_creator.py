@@ -2,8 +2,7 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
-from xml.etree import ElementTree
-from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import Element, SubElement
 
 
 class MarcCollection:
@@ -14,20 +13,20 @@ class MarcCollection:
         """
         Initialize collection of records.
         """
-        self.collection = self.create_collection_element()
+        self.root = Element('collection')
 
     class MarcRecord:
         """
         Create a single MARC21 record as xml.etree.ElementTree.Element
         """
         def __init__(self):
-            self.record = ElementTree.Element('record')
+            self.root = Element('record')
 
         def create_subfield(self, code: str, text: str):
             pass
 
-        def append_datafield(self, attributes: tuple, subfields: tuple):
-            datafield = ElementTree.SubElement(self.record, "datafield")
+        def append_datafield(self, attributes: tuple, subfields: tuple) -> SubElement:
+            datafield = SubElement(self.root, "datafield")
             datafield.set("tag", attributes[0])
             datafield.set("ind1", attributes[1])
             datafield.set("ind2", attributes[2])
@@ -35,21 +34,16 @@ class MarcCollection:
                 datafield.append(subfield)
             return datafield
 
-        def append_controlfield(self, tag: str, text: str):
+        def append_controlfield(self, tag: str, text: str) -> SubElement:
             controlfield = self.append_field("controlfield", text)
             controlfield.set("tag", tag)
             return controlfield
 
-        def append_leader(self, text: str):
+        def append_leader(self, text: str) -> SubElement:
             leader = self.append_field("leader", text)
             return leader
 
-        def append_field(self, name, text):
-            field = ElementTree.SubElement(self.record, name)
+        def append_field(self, name: str, text: str) -> SubElement:
+            field = SubElement(self.root, name)
             field.text = text
             return field
-
-    @staticmethod
-    def create_collection_element() -> ElementTree.Element:
-        collection = ElementTree.Element('collection')
-        return collection
