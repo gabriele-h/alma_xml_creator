@@ -22,9 +22,6 @@ class MarcCollection:
         def __init__(self):
             self.root = Element('record')
 
-        def create_subfield(self, code: str, text: str):
-            pass
-
         def append_datafield(self, attributes: tuple, subfields: tuple) -> SubElement:
             datafield = SubElement(self.root, "datafield")
             datafield.set("tag", attributes[0])
@@ -33,6 +30,13 @@ class MarcCollection:
             for subfield in subfields:
                 datafield.append(subfield)
             return datafield
+
+        @staticmethod
+        def create_subfield(code: str, text: str) -> Element:
+            subfield = Element("subfield")
+            subfield.set("code", code)
+            subfield.text = text
+            return subfield
 
         def append_controlfield(self, tag: str, text: str) -> SubElement:
             controlfield = self.append_field("controlfield", text)
