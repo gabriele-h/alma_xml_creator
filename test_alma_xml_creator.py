@@ -15,16 +15,19 @@ class TestMarcCollection:
 
     TestCollection = MarcCollection()
     collection = TestCollection.collection
-    record = TestCollection.append_record()
+    TestRecord = TestCollection.MarcRecord()
+    record = TestRecord.record
 
     def test_can_add_subelement(self):
         """Output from create_collection_tree() can have SubElement"""
         testelement = ElementTree.SubElement(self.collection, "testelement")
         assert testelement.tag == "testelement"
 
-    def test_append_record(self):
+    def test_can_add_record_to_collection(self):
         """Appending a record works"""
-        assert self.record.tag == "record"
+        self.collection.append(self.record)
+        record_in_tree = self.collection.find("record")
+        assert record_in_tree.tag == "record"
 
     def test_collection_has_record(self):
         """Is the record actually appended to the collection?"""
