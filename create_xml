@@ -14,7 +14,7 @@ except IndexError:
     exit(1)
 else:
 
-    with open(csv_path, "r", newline="") as csv_file:
+    with open(csv_path, "r", newline="", encoding="utf-8") as csv_file:
         csv_reader = reader(csv_file, delimiter=";")
         collection = alma_xml_creator.create_collection_from_reader(csv_reader)
 
