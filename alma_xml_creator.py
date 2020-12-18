@@ -2,12 +2,10 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
-from csv import reader
 from logging import getLogger
 from re import compile
-from sys import argv
 from typing import Iterator
-from xml.etree.ElementTree import Element, ElementTree, SubElement
+from xml.etree.ElementTree import Element, SubElement
 
 
 logger = getLogger("alma_xml_creator")
@@ -136,19 +134,3 @@ class MarcCollection:
             field = SubElement(self.root, name)
             field.text = text
             return field
-
-
-# Make this work as a cli-script, too
-if __name__ == "__main__":
-
-    try:
-        csv_path = argv[1]
-        xml_path = argv[2]
-    except IndexError:
-        print("Please provide both input and output file in that order.")
-
-    with open(csv_path, "r", newline="", encoding="ANSI") as csv_file:
-        csv_reader = reader(csv_file, delimiter=";")
-        collection = create_collection_from_reader(csv_reader)
-
-        ElementTree(collection).write(xml_path, encoding='utf-8', xml_declaration=True)

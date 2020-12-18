@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+from csv import reader
+from xml.etree.ElementTree import ElementTree
+from sys import argv
+
+import alma_xml_creator
+
+try:
+    csv_path = argv[1]
+    xml_path = argv[2]
+except IndexError:
+    print("Please provide both input and output file in that order.")
+    exit(1)
+else:
+
+    with open(csv_path, "r", newline="") as csv_file:
+        csv_reader = reader(csv_file, delimiter=";")
+        collection = alma_xml_creator.create_collection_from_reader(csv_reader)
+
+        ElementTree(collection).write(xml_path, encoding='utf-8', xml_declaration=True)
