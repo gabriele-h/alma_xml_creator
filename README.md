@@ -13,7 +13,7 @@ The expected Input is a semicolon-delimited and utf-8 encoded csv file with the 
 * File needs to have a header of the following format:
     * "LDR" or "leader" for the leader field
     * Tag-number for controlfields
-    * Tag-number and both indicators for datafields with no delimiters (e. g. "24500")
+    * Tag-number and both indicators with no delimiters for datafields (e. g. "24500")
     * Any columns with a heading not matching these conditions will be discarded and an error thrown to indicate that
 * The content of datafields must be given in the following format:
     * Subfield-Contents with "$$" prefix, followed by the subfield's code and finally its content
@@ -57,4 +57,4 @@ or in an editor with XML-functionality to make it more human readable.
 python create_xml test.csv test.xml
 ```
 
-Input is provided as the first cli-parameter, output as the second.
+Input is provided as the first argument, output as the second.
