@@ -51,7 +51,7 @@ The script's output sould look like this:
 Note that there is no pretty printing, meaning no line breaks and no indentation. Open the file in any web browser
 or in an editor with XML-functionality to make it more human readable.
 
-#Usage
+# Usage
 
 ```bash
 python create_xml test.csv test.xml
