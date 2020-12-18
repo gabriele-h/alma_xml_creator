@@ -44,7 +44,6 @@ def create_collection_from_reader(current_reader: Iterator[dict]):
                     logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
 
         new_collection.append(NewRecord.root)
-        print(NewRecord.root)
 
     return new_collection
 
