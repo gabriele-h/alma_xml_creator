@@ -22,7 +22,8 @@ The expected Input is a semicolon-delimited and utf-8 encoded csv file with the 
     
 ## Output
 
-Only the information given will be added to the XML, except for the document declaration, which will always be added.
+In addition to the information given in the csv-file, if controlfield 005 is not provided, it will be set with the
+starting timestamp of the script's execution and added at the end of each record.
 
 For Subfields please consider the following:
 

@@ -2,6 +2,7 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
+from datetime import date, datetime, timezone
 from logging import getLogger
 from re import compile
 from typing import Iterator
@@ -9,6 +10,8 @@ from xml.etree.ElementTree import Element, SubElement
 
 
 logger = getLogger("alma_xml_creator")
+timestamp_datetime = datetime.now(timezone.utc)
+timestamp_str = timestamp_datetime.strftime("%Y%m%d%H%M%S.0")
 
 
 def create_collection_from_reader(current_reader: Iterator[dict]):
@@ -42,6 +45,9 @@ def create_collection_from_reader(current_reader: Iterator[dict]):
                     NewRecord.append_datafield(field_key, field_value)
                 else:
                     logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
+
+        if "005" not in csv_header:
+            NewRecord.append_controlfield('005', timestamp_str)
 
         new_collection.append(NewRecord.root)
 
