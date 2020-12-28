@@ -2,7 +2,7 @@
 Create XML of multiple records that can be added to Alma via Import job.
 """
 
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from logging import getLogger
 from re import compile
 from typing import Iterator
