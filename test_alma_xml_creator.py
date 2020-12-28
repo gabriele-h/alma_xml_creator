@@ -56,8 +56,6 @@ class TestCreateCollectionFromReader:
     def test_count_500(self):
         xpath_500 = './/datafield[@tag="500"]'
         all_500 = self.collection.findall(xpath_500)
-        from xml.etree.ElementTree import tostring
-        print(tostring(self.collection))
         assert len(all_500) == 3
 
 
