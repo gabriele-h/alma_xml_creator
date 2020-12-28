@@ -36,9 +36,9 @@ def create_collection_from_reader(current_reader: Iterator[dict]):
 
                 if field_key in ('LDR', 'leader', 'LDR  '):
                     NewRecord.append_leader(field_value)
-                elif field_key[0] == "0" and field_key[1] == "0":
+                elif field_key[0:2] == "00" and len(field_key) == 3:
                     NewRecord.append_controlfield(field_key, field_value)
-                elif compile(r'^[0-9]{3}[0-9A-z ]{2}$').match(field_key):
+                elif compile(r'^[0-9]{3}[0-9A-z ]{2}$').match(field_key) and field_key[0:2] != "00":
                     NewRecord.append_datafield(field_key, field_value)
                 else:
                     logger.error(f"""field_key '{field_key}' did not match expectations. Skipping.""")
