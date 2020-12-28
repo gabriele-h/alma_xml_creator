@@ -46,6 +46,7 @@ class TestCreateCollectionFromReader:
     csvfile.seek(0)
     csv_reader = reader(csvfile, delimiter=';')
     collection = create_collection_from_reader(csv_reader)
+    first_record = collection.find('./record')
 
     def test_title_created_correctly(self):
         xpath_title = './record/datafield[@tag="245"]/subfield[@code="a"]'
@@ -57,6 +58,20 @@ class TestCreateCollectionFromReader:
         xpath_500 = './/datafield[@tag="500"]'
         all_500 = self.collection.findall(xpath_500)
         assert len(all_500) == 3
+
+    def test_fields_as_expected(self):
+        """All control- and datafields are created as expected"""
+        found_controlfields = self.first_record.findall('./controlfield')
+        found_datafields = self.first_record.findall('./datafield')
+        controlfield_tags = []
+        datafield_tags = []
+        for controlfield in found_controlfields:
+            controlfield_tags.append(controlfield.get('tag'))
+        for datafield in found_datafields:
+            datafield_tags.append(datafield.get('tag'))
+        controlfield_tags.sort()
+        assert controlfield_tags == ['005', '007', '008'] and \
+               datafield_tags == ['041', '245', '246', '500', '500']
 
 
 class TestMarcCollection:
